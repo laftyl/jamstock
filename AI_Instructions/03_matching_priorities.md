@@ -31,3 +31,7 @@ Important
 Nice to have
 5. Genre matching for folks who want to stick to their genre
 6. Genre matching for folks who are okay with going outside their genre
+
+I'm also thing in regards to instrumentation and band matching:
+Every instrument (and regex whatever folks put as other) should be assinged to an object. That object should include it's primary (required), secondary, tertiary, and tetrary role in regards to melodic, harmonic, percussive, etc. There can be more than one per level. For example a guitar may be primary: melody, harmony, secondary: bass. A tuba is primary: bass secondary: melody.
+Each instrument should be tallied by how many people signed up to use them. Instruments with a lower tally should be prioritized to be used in their primary function. Instruments with higher tally can fill in gaps with their non-primary functions. For example, a guitar {primary: melody, harmony / secondary: bass / total: 10} and a pianist {primary: melody, harmony / secondary: bass / total: 3} should allow the guitarist to take priority over the piano if there is a shortage of bass capable instruments.
