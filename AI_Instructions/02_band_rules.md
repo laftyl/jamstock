@@ -4,7 +4,7 @@
 3 to 6
 
 ## 2. Required roles/instruments per band
-At least 1 melodic instrument, 1 rhythmic instrument, 1 percussion, 1 instrument capable of bass
+At least 1 melodic instrument, 1 harmonic instrument, 1 percussion, 1 instrument capable of bass
 If roles cannot be filled, make bands based on capabilities of each instrument. For example, a piano has bass capabilities. A guitar can by melodic or rhythmic.
 
 ## 3. What if someone plays multiple instruments?

@@ -1,36 +1,75 @@
 # 01 — Google Form Fields
 
-## 1. Paste your Google Form's column headers exactly as they appear in the Excel export
-(Copy the header row from the exported .xlsx/.csv file. If names are long/messy, that's fine — paste exactly as-is.)
+Status: structured from the raw form dump you pasted (see "Raw form dump" at the bottom for the original). This is now organized by section, with each field's column header, response type, options, and any branching logic noted, so it maps cleanly onto the import/matching code. If anything below misreads your intent, correct it directly in this file.
 
-```
-(paste here)
-```
+## Field reference (by section)
 
-## 2. Paste one or two sample rows of data (use fake/placeholder data if the real data is private)
-```
-(paste here)
-```
+### Section 1: Registration
+| Column header | Type | Required | Options / Notes |
+|---|---|---|---|
+| First name | short text | ✔ | |
+| Last name | short text | ✔ | |
+| Email | short text | ✔ | |
+| Are you 21 or older? | single choice | ✔ | "Yes (or will be by 1/1/2027)" / "No" → **No routes to Section 8 (disqualified)** |
+| Have you joined our Discord server? | single choice | | Yes / No — informational only |
 
-## 3. For each field, tell me what it means / how to use it
-Example format:
-- `Full Name` → participant's name
-- `What instrument(s) do you play?` → instrument(s), may be multiple selected (comma-separated?)
-- `Skill level` → self-rated 1-5, or beginner/intermediate/advanced?
-- `Email` → contact info, not used for matching
+### Section 2: Musical Experience
+| Column header | Type | Required | Options / Notes |
+|---|---|---|---|
+| How much music experience do you have? | single choice | ✔ | None / Beginner / Intermediate / Advanced — this is the **skill level** field |
+| What is your primary instrument? (check all that apply) | checkbox | ✔ | Vocalist, Guitarist, Bassist, Percussionist, Keys, Brass, Strings, Winds, Electronic musician, Recording/Mixing engineer, Other (free text), "I don't play an instrument but want to participate" |
+| What other instruments can you play? (check all that apply) | checkbox | | Same option list as above — these are **secondary** instruments/roles |
+| What musical skills do you have? (check all that apply) | checkbox | | Songwriting, Sound design, Arrangement, Music theory, Other (free text) |
+| What genres are you most comfortable playing? (check all that apply) | checkbox | | Hip-hop, R&B, Pop, Rock, Indie, Alternative, Electronic, Jazz, Funk, Soul, Country, Folk, Punk, Metal, Gospel, Classical, Experimental, "I'm cool with any genre" |
+| Are you open to playing genres outside your normal style? | single choice | ✔ | Absolutely / Potentially / "I prefer to stay in my preferred style" |
 
-(fill in below)
--
--
--
+### Section 3: Equipment and Instruments
+| Column header | Type | Required | Options / Notes |
+|---|---|---|---|
+| What portable instruments (and supporting equipment) do you have access to? (check all that apply) | checkbox | ✔ | Microphone, Guitar, Bass, Percussion, Keys, Brass, Strings, Winds, Electronic music equipment (MIDI/laptop/synths/VSTs), Recording/Mixing engineer, Other (free text), "I don't play an instrument but want to participate", "I do not have access to a portable version of my instrument with supporting equipment" |
+| What equipment are you willing to share with bandmates? (check all that apply) | checkbox | ✔ | "I have no equipment / not comfortable sharing", Microphone, Guitar, Bass, Percussion, Keys, Brass, Strings, Winds, MIDI Controllers, Mics, Cables, Amps, Other (free text) |
 
-## 4. Are any fields multi-select (checkboxes) where someone could pick more than one instrument or answer?
-(yes/no, and which fields)
+### Section 4: Mixing Engineers (branch point)
+| Column header | Type | Required | Options / Notes |
+|---|---|---|---|
+| Do you have mixing skills AND want to mix for this event? | single choice | ✔ | Yes → Section 5 (producer questions) / No → Section 6 |
 
-## 5. Is there anything messy about the real export I should expect (typos, "Guitar " vs "guitar", blank rows, duplicate submissions)?
-(describe)
+### Section 5: Mixing Engineer Teams (only shown if "Yes" above)
+| Column header | Type | Required | Options / Notes |
+|---|---|---|---|
+| Performer + Producer, or Producer only? | single choice | ✔ | Determines if this person also needs an instrument role or is production-only |
+| If short on producers, open to producing for additional teams? | single choice | ✔ | Absolutely! / "No, I'd rather focus on my team" — signals a producer who can be **shared across bands** |
+| Understand production may just be rough phone recordings, not polished? | single choice | ✔ | Confirms expectations; not used for matching |
 
-## 6. (Added by me) This is the google form with all answers as it stands. Please rewrite your current structure with this information in mind. The word (Header) marks that this would be a column header. * Mark it is required. /Response-type tells you if it's long form, short form, checkbox etc. Note that we may need to include REGEX for typed responses. //8 means selecting that answer routes registratees to section 8 or whatever section is numbered. >>Description means this is just a description of the above header/question.
+### Section 5 (Commitment and Logistics — form has two sections numbered "5")
+| Column header | Type | Required | Options / Notes |
+|---|---|---|---|
+| Willing to be a humble listener and/or patient mentor? | single choice | ✔ | "I'm here to make a banger..." → **routes to Section 8 (disqualified)** / "I have experience to share" (**mentor**) / "I am new and will humbly learn" (**newbie**) |
+| How open to showcasing work to an audience? | single choice | ✔ | Don't show / prefer pre-recorded / prefer live / open to either — informational; note may change later |
+| Reliable transportation to required in-person portions? | single choice | ✔ | Yes / No → **routes to Section 8 (disqualified)** |
+| What hours are you free during the 48-hour event? (check all that apply) | checkbox | ✔ | Friday evening, Saturday morning/afternoon/evening, Sunday morning/afternoon/evening — this is the **availability** field |
+| Committed to being a reliable bandmate for the full 48 hours? | single choice | ✔ | Yes / "some limitations, few hours" / "cannot commit" → **routes to Section 8 (disqualified)** |
+
+### Section 6: Event Checkout
+| Column header | Type | Required | Options / Notes |
+|---|---|---|---|
+| Have you purchased your event ticket? | single choice | ✔ | Yes only listed |
+| Anything else we should know about your hopes/expectations? | long text | | Free text, informational only |
+
+### Section 8: Disqualification (not a real answer — reached via branching)
+Anyone routed here (under 21, no transportation, can't commit, or "wrong answer" on mentorship) should **not** be imported into the matchable participant pool. Need to confirm exact handling — see open question in `04_open_questions.md`.
+
+## Multi-select fields
+Yes — these are checkbox fields where someone can select multiple values (Excel export will likely show them as one cell with comma or newline-separated values, needs parsing): primary instrument, other instruments, musical skills, genres comfortable, portable instruments/equipment access, equipment willing to share, availability hours.
+
+## Known messiness to expect in the real export
+- "Other" free-text answers (instruments, skills, equipment) will need to be matched against known categories via keyword/regex rather than assumed clean.
+- Checkbox answers likely arrive as a single string per cell (e.g. `"Guitarist, Bassist"`) that needs splitting.
+- Two form sections are both labeled "Section 5" — don't rely on section number alone to distinguish them, use the header/question text.
+
+## Raw form dump (original, kept for reference)
+The word (Header) marks a column header. `*` marks required. `/Response-type` = long form, short form, checkbox etc. `//8` means selecting that answer routes registrants to section 8 (or whichever section is numbered). `>>Description` is just a description of the field above, not itself a field.
+
 SECTION 1: RVA JamStock Registration Form
 
 Show up. Make a band. Write a song. Jam out!
