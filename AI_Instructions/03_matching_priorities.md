@@ -26,7 +26,7 @@ Necessary
 
 Important
 4. Complimentary band roles (Rhythm players, melody pklayer, percussion players, production, and anything else you can think of if needed. Note producers may be split among groups.)
-5. Complimentary equipment of those willing to share. Tied with 
+5. Complimentary equipment of those willing to share. Tied with 4.
 
 Nice to have
 5. Genre matching for folks who want to stick to their genre
