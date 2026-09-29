@@ -40,13 +40,67 @@ If the code and those files disagree, the files win — but stop and confirm wit
 - CommonJS `require`. No ESM, no TypeScript, no transpile step.
 - `request` / `response`, never `req` / `res`. Full words over abbreviations.
 - Named `function` declarations for helpers; `const` arrows only for true one-liners.
-- Keep the dense single-line style. Do not reformat existing lines you aren't changing — it destroys the diff.
+- **Write new code in the clean style below, not in the existing dense one-liner style.** Do not reformat lines you aren't otherwise changing — that destroys the diff. Instead, log the reformat as a tech-debt item.
 - `better-sqlite3` is **synchronous**. No `await` on DB calls. Wrap multi-write operations in `db.transaction(...)`.
 - Use prepared statements with bound parameters. Never build SQL by string concatenation.
 - Every user-supplied value rendered into HTML goes through `escapeHtml()`.
 - Every new API route gets `requireAuth` unless there is a stated reason not to.
 - Comments are rare, one line, and explain *why*.
 - **No new npm dependencies** without explicit owner approval. The current four are `express`, `better-sqlite3`, `multer`, `xlsx`.
+
+## Code quality standard — you do not write spaghetti
+
+The existing codebase packs entire functions and route handlers onto single 2,000-character lines. **That is the legacy style, not the target.** Everything you write is clean, readable, efficient, and testable.
+
+**Structure**
+- One statement per line. Multi-line function bodies. Real indentation.
+- A function does one thing. If you need the word "and" to describe it, split it.
+- Keep functions short enough to read without scrolling — roughly 20 lines is the smell threshold, not a hard cap.
+- Maximum two levels of nesting. Use guard clauses and early returns instead of `if/else` pyramids.
+- Name things for what they mean, not what type they are. `checkedInEligibleParticipants`, not `list2`.
+- No magic numbers or magic strings. Hoist them to named constants (`const MIN_BAND_SIZE = 3`).
+- Don't repeat yourself, but don't abstract on the first repetition either. Extract on the third.
+
+**Separation of concerns**
+- Keep pure logic pure. Matching, scoring, classification, and role resolution must be plain functions that take data and return data — no `db`, no `request`, no `response` inside them.
+- Route handlers stay thin: validate input → call a pure function or a named data-access function → shape the response. No business rules inline in a handler.
+- Database access lives in named functions, not scattered `db.prepare(...)` calls inside handlers.
+- This separation is the whole reason the code becomes testable. Treat it as non-negotiable.
+
+**Testability**
+- Before writing a function, ask how it will be verified. If the answer is "boot the server and click around," restructure it.
+- Pure functions with explicit inputs and outputs. No hidden reads of module-level mutable state.
+- Avoid side effects in anything that returns a value.
+- Deterministic by default — no `Math.random()` or `Date.now()` buried inside logic. Pass them in.
+
+**Efficiency**
+- No queries inside loops. The current `/api/bands/generate` runs a `db.prepare(...).get()` per participant inside a `filter` — that is the pattern to avoid. Load once into a `Set` or `Map` and look up in memory.
+- Choose the right data structure. `Set` for membership, `Map` for lookup by key, array only when order matters.
+- Don't micro-optimize readable code. Do fix algorithmic problems.
+
+**Errors**
+- Fail loudly and specifically. No empty `catch {}` blocks and no silent fallback defaults that hide a bug.
+- Validate at the boundary (request body, uploaded file, form row). Trust your own internals.
+- Error messages tell the admin what to do next, not just what broke.
+
+## Tech debt authority
+
+You are authorized — expected, actually — to call out and refuse to create tech debt. Specifically you may:
+
+- Push back on a requested approach and propose a cleaner one, with the reasoning.
+- Extract a helper, split a function, or add a named constant as part of work you're already doing in that code.
+- Decline to bolt a feature onto a structure that can't support it, and instead propose the refactor first as its own plan.
+- Flag any shortcut the owner asks for as debt, and say what it will cost later.
+
+**The condition: Alixander must be notified and able to verify.** For every one of these calls, in your report:
+1. State what you did or refused to do, and why.
+2. Name the exact files, functions, and lines affected.
+3. Give him the concrete way to verify it — the command to run, the endpoint to hit, or the UI path to click.
+4. Say what would have happened if you'd taken the shortcut instead.
+
+Never do a silent refactor. Never let cleanup ride along unannounced inside a feature diff — if it's more than a line or two, it's a separate item in the plan with its own line in the report. Structural refactors that touch code outside the approved scope still need approval; propose them, don't just do them.
+
+When you spot debt you aren't fixing right now, add it to `Agents/HOMEWORK.md` under **Developer Dan → Tech debt** so it doesn't get lost.
 
 ## Data and destructive-operation safety
 
@@ -80,3 +134,12 @@ There is **no test framework installed**. Do not claim tests exist.
 Label every item as one of: **Implemented** · **Tested** (you ran it) · **Verified in the running app** (you exercised the UI or endpoint) · **Not tested** · **Not implemented** · **Blocked**.
 
 Diagnose root causes; do not paper over symptoms with try/catch or defensive defaults that hide the failure. If you don't know why something works, say so.
+
+## Homework doc
+
+`Agents/HOMEWORK.md` is Alixander's to-do list. Keep your section current **proactively** — you don't need to be asked.
+
+- Add a row whenever you hit a decision, approval, credential, file, or piece of information you need from him, and whenever you find tech debt you're deferring.
+- Delete rows that are no longer relevant. Move answered items to the Resolved log with the date and outcome.
+- Every row needs a concrete ask and why it's blocking. "Review the code" is useless; "Approve Plan v2 so I can replace the per-participant query in `/api/bands/generate`" is actionable.
+- Never edit another agent's section.
