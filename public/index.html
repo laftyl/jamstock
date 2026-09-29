@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>RVA JamStock</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <main id="app" class="app-shell">
+    <section id="auth-view" class="auth-view">
+      <div class="auth-card">
+        <p class="eyebrow">RVA JAMSTOCK · LOCAL ADMIN</p>
+        <h1>Make the room sound like something.</h1>
+        <p id="auth-copy" class="muted">Loading local workspace...</p>
+        <form id="auth-form" class="stack" hidden>
+          <label id="password-label" for="password-input">Password</label>
+          <input id="password-input" type="text" autocomplete="current-password" required>
+          <div id="security-fields" class="stack" hidden>
+            <p id="security-heading" class="muted">These questions are used only to reset your password.</p>
+            <label for="question-one">What is your mom's maiden name?</label>
+            <input id="question-one" type="text" autocomplete="off">
+            <label for="question-two">What was the best dog ever?</label>
+            <input id="question-two" type="text" autocomplete="off">
+            <label for="question-three">What is your best friend's first and last name?</label>
+            <input id="question-three" type="text" autocomplete="off">
+          </div>
+          <button type="submit" class="button button-primary">Continue</button>
+          <button id="reset-button" type="button" class="button button-quiet" hidden>Forgot password? Reset it</button>
+          <p id="auth-error" class="error" role="alert"></p>
+        </form>
+      </div>
+    </section>
+
+    <section id="dashboard-view" hidden>
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">RVA JAMSTOCK · JAN 1–3, 2027</p>
+          <h1>Event control room</h1>
+        </div>
+        <button id="logout-button" class="button button-quiet">Lock app</button>
+      </header>
+      <nav class="tabs" aria-label="Primary navigation">
+        <button class="tab is-active" data-panel="overview-panel">Overview</button>
+        <button class="tab" data-panel="participants-panel">Participants</button>
+        <button class="tab" data-panel="bands-panel">Bands</button>
+        <button class="tab" data-panel="imports-panel">Import</button>
+      </nav>
+      <div id="notice" class="notice" hidden></div>
+      <section id="overview-panel" class="panel-grid">
+        <article class="metric-card metric-dark"><span>Eligible</span><strong id="eligible-count">0</strong><small>ready for review</small></article>
+        <article class="metric-card"><span>Checked in</span><strong id="checked-in-count">0</strong><small>day-of attendance</small></article>
+        <article class="metric-card"><span>Bands</span><strong id="band-count">0</strong><small>draft or finalized</small></article>
+        <article class="metric-card metric-accent"><span>Needs attention</span><strong id="issue-count">0</strong><small>import and matching warnings</small></article>
+        <article class="wide-card event-card">
+          <div><p class="eyebrow">NEXT MILESTONE</p><h2>Kickoff · January 1 at 6:00 PM</h2><p class="muted">In Your Ear Studios · The 48-hour creation window ends January 3 at 6:00 PM.</p></div>
+          <span class="status-pill">Local only</span>
+        </article>
+      </section>
+      <section id="participants-panel" class="content-panel" hidden><div class="section-heading"><div><p class="eyebrow">ATTENDEE ROSTER</p><h2>Participants</h2></div><div class="section-actions"><input id="participant-search" class="search" type="search" placeholder="Search name or email"><button id="check-in-all-button" class="button button-primary" type="button">Check in all</button></div></div><div id="participant-list" class="list"></div></section>
+      <section id="bands-panel" class="content-panel" hidden><div class="section-heading"><div><p class="eyebrow">MATCHING WORKSPACE</p><h2>Bands</h2><p class="muted">Bands are created only when you explicitly press the button.</p></div><div class="section-actions"><button id="export-bands-button" class="button button-quiet" type="button">Export CSV</button><button id="clear-bands-button" class="button button-quiet" type="button">Clear bands</button><button id="generate-button" class="button button-primary" type="button">Generate bands</button></div></div><div id="band-list" class="band-grid"></div></section>
+      <section id="imports-panel" class="content-panel" hidden><div class="section-heading"><div><p class="eyebrow">DATA INTAKE</p><h2>Import registrations</h2></div></div><div class="import-box"><p>Upload a Google Forms `.csv` or `.xlsx` export. The importer will preview eligible, excluded, duplicate, and malformed rows before saving.</p><form id="import-form"><input id="import-file" type="file" accept=".csv,.xlsx,.xls" required><button class="button button-primary" type="submit">Preview import</button></form><div id="import-result"></div></div><div class="import-box"><p class="eyebrow">DANGER ZONE</p><p>Reset removes all imported participants and bands so you can test from scratch. This cannot be undone.</p><button id="reset-all-button" class="button button-danger" type="button">Reset all data</button></div></section>
+    </section>
+  </main>
+  <script src="/app.js"></script>
+</body>
+</html>

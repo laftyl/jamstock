@@ -1,0 +1,17 @@
+{
+  "name": "jamstock-matching-app",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Local admin app for RVA JamStock participant intake and band matching.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js"
+  },
+  "dependencies": {
+    "better-sqlite3": "^11.10.0",
+    "express": "^5.1.0",
+    "multer": "^2.0.2",
+    "xlsx": "^0.18.5"
+  }
+}
