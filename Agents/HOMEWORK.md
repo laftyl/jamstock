@@ -4,7 +4,7 @@
 
 Agents maintain this file proactively. They add items as they come up, delete items that stop being relevant, and move answered items to the Resolved log. You never have to ask them to update it.
 
-Last updated: 2026-09-29
+Last updated: 2026-09-29 (Product Pete — P-1 through P-6 resolved)
 
 ---
 
@@ -31,14 +31,15 @@ Last updated: 2026-09-29
 
 ## Product Pete — requirements & scope
 
+P-1 through P-6 are answered and moved to the Resolved log. These are what your answers created.
+
 | # | Priority | What I need from you | Why it matters | Your answer |
 |---|---|---|---|---|
-| P-1 | HIGH | `03_matching_priorities.md` §2 (does genre matter for grouping?), §3 (is everyone available the full 48h?), §4 (priority order when rules conflict), and §5 (randomness) are still unanswered. `06` §D partly covers §4 — confirm `06` wins and I'll mark `03` as superseded. | These are live inputs to the matching algorithm. Dan can't implement a priority order that doesn't exist. | 2 - It matters very little in so much that if all other parameters are met, err on the side of grouping via genre. 3 - They may not be, hence why it is important to match with as much availability overlap as possible. 4 - Priority is already mapped out. 5 - Randomness is unneeded.|
-| P-2 | HIGH | `06` §D asks me to "give you ideas" for the equipment-sharing fallback and for failsafes when matching fails. Do you want me to draft those, or do you already have an answer? | It's the only requirement in `06` that points back at us instead of at you. | Give me ideas.|
-| P-3 | MEDIUM | Roughly how many registrations do you expect? The sample files are 100 rows. | 100 vs 400 changes whether a simple algorithm is good enough or we need something smarter. | The smarter the better. It should be able to do at least 1,000 but 100 is good for now|
-| P-4 | MEDIUM | What happens on event day if someone shows up who never registered, or a registered person no-shows after bands are generated? | `06` §D mentions regenerating when a band drops off, but there's no defined walk-in path. | They must register on the spot and we need to be able to manually add them. On that note, their should be an option for me to be able to manually move individuals to other bands if needed, and it makes suggestions based on priority criteria. For example, if people have a band but then someone drops out and I need to spread the remaining band members to other bands, I need a way to do that. Also, as a UI note (please give this to DeeDee) I want each person to show all primary instruments instead of just one.|
-| P-5 | MEDIUM | `05_future_features.md` §4 (printable rosters or a projector display?) is blank. | Cheap to build now, annoying to add on Jan 1. | Both |
-| P-6 | LOW | Define what "success" means for this tool. Fewer minutes spent matching? No band left without a drummer? Something else? | Gives us a way to argue about features with evidence instead of taste. | All bands are created based on priority criteria. |
+| P-7 | HIGH | Approve or reject four items in my P-2 draft (`04_open_questions.md` → *2026-09-29 — Pete's answers to P-2*): **E5** cross-band equipment loans, **E6** an admin-entered house/venue gear inventory, **E7** letting electronic musicians digitally cover a missing bass/keys/percussion role, **F10** a matching time budget (I suggest 10 seconds). | E6 is the biggest single lever — if In Your Ear Studios has a house drum kit, it removes the worst equipment scarcity in the whole event. The rest change what Dan builds. | |
+| P-8 | HIGH | Approve `AI_Instructions/07_manual_overrides.md` (walk-in registration, move-with-suggestions, dissolve-and-redistribute) as the v1 spec, or tell me what to cut. My recommendation: Move + Unassigned are **must**; walk-in and dissolve are **should**. | `06` §G and §J.6 already promise manual moves. This is the first time they have testable criteria. | |
+| P-9 | MEDIUM | Three questions from the manual-override spec: (1) Should a manual move **auto-lock** both bands so regeneration can't undo your work? (2) Walk-in form: full ~15 fields, or a short version with the rest optional? (3) When someone no-shows, mark them **no-show** or delete them outright? | (1) decides whether you can lose work on event day. (2) trades typing time against match quality. (3) affects whether the headcount invariants can be trusted. | |
+| P-10 | MEDIUM | Confirm the success definition I derived from your P-6 answer: **100% of bands satisfy every hard constraint with zero BLOCKER flags**, where hard = size 3–6, percussion+bass+melody+rhythm covered, one producer within cap, all members eligible and checked in, nobody in two bands or missing. Availability, veteran presence, vocals, and equipment are reported as percentages rather than pass/fail. It's in `06` §M. | This is the number we'll argue about features with. If it's wrong, everything downstream is measured against the wrong thing. | |
+| P-11 | LOW | `06` §L still lists four defaults awaiting your sign-off: the instrument→role table (§E), equipment behavior (§F), producer shortage behavior (§K), duplicate handling (§G). Say "approve §L as written" or name what to change. | Dan has to hardcode the instrument→role table to build anything. It's the single most load-bearing table in the project. | |
 
 ---
 
@@ -88,3 +89,9 @@ Answered or completed items, kept for the record.
 | 2026-09-29 | — | Stand up the four-agent team | Done. Mike, Pete, DeeDee, and Dan are live in `.github/agents/`. |
 | 2026-09-29 | — | Rename agents to persona filenames | Done. `Manager_Mike`, `Product_Pete`, `Designer_DeeDee`, `Developer_Dan`. |
 | 2026-09-29 | V-2 (partial) | Dan must write clean, readable, testable code and may call out tech debt | Approved by owner, with the condition that every such call is reported so it can be verified. |
+| 2026-09-29 | P-1 | Unanswered sections of `03_matching_priorities.md` | Answered. Genre is a last-resort tie-breaker only; availability is partial by default and must be maximized; randomness is out entirely. Written up as rules in `03` §2, §3, §5. `03` §4 now formally defers to `06` §D as the authoritative ranked priority list. |
+| 2026-09-29 | P-2 | Equipment-sharing fallback and matching failsafes | Owner asked for ideas. Drafted an 8-rung equipment fallback ladder (E1–E8) and 11 failsafes (F1–F11) in `04_open_questions.md` under *2026-09-29 — Pete's answers to P-2*. Four items still need a yes/no — tracked as P-7. |
+| 2026-09-29 | P-3 | Expected registration volume | Answered: design for 1,000, work with 100 today. Recorded as a hard algorithm-design constraint in `06` §M, with explicit implementation consequences addressed to Dan (no per-participant queries in loops, bitmask availability, parse once). |
+| 2026-09-29 | P-4 | Walk-ins and drop-outs on event day | Answered: on-the-spot registration, manual add, manual move with ranked suggestions, and redistribution after a drop-out. Full spec with 41 numbered acceptance criteria written to `AI_Instructions/07_manual_overrides.md`. Approval tracked as P-8. |
+| 2026-09-29 | P-5 | Printable rosters or projector display | Answered: both. Recorded in `05_future_features.md` §4, including that the projector view omits emails and equipment details per `06` §F. |
+| 2026-09-29 | P-6 | Definition of success | Answered: "all bands are created based on priority criteria." Translated into a measurable target in `06` §M — 100% of bands satisfying every hard constraint with zero BLOCKER flags. Confirmation tracked as P-10. |

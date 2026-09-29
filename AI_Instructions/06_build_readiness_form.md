@@ -175,3 +175,35 @@ Approve or edit these defaults before production implementation:
 4. Duplicate handling in Section G.
 
 The password recovery answers should be entered only in the running app during first-time setup, not saved in this file.
+
+## M. Scale and definition of success
+
+Added 2026-09-29 from the owner's answers to homework P-3 and P-6 (logged in `04_open_questions.md` Q9 and Q12).
+
+### Scale target — this is a constraint on algorithm design, not a nice-to-have
+
+- Owner's words: "The smarter the better. It should be able to do at least 1,000 but 100 is good for now."
+- **Design target: 1,000 participants (~200–250 bands). Current working set: 100.**
+- Consequences for implementation — **Developer Dan, read this before designing the generator:**
+  1. No per-participant database query inside a loop. Load once into in-memory maps and sets. (This is exactly the defect in `Agents/HOMEWORK.md` TD-1.)
+  2. Avoid all-pairs comparisons where they can be avoided. Naive pairwise availability comparison across 1,000 participants is ~500,000 comparisons per pass; availability must be bitmasked over the 7 blocks so overlap is a bitwise AND and a popcount.
+  3. Instrument, genre, skill, and availability strings must be parsed **once** at import or load time, not re-parsed per comparison (TD-4).
+  4. Correctness at 100 is the v1 bar. Performance at 1,000 is the architectural bar — do not choose an approach that cannot get there, even if the faster path isn't built yet.
+  5. Matching must return within a fixed time budget at 1,000 and report honestly if it was time-capped rather than hanging (proposed failsafe F10 in `04`, pending owner approval of the budget).
+
+### Definition of success
+
+- Owner's words: "All bands are created based on priority criteria."
+- **Measurable form:** a generation is successful when **100% of generated bands satisfy every hard constraint with zero `BLOCKER` flags**, where hard constraints are:
+  1. Band size is 3–6 performers (producer-only participants excluded from the count, `06` §C/§K).
+  2. Percussion, bass, melody, and rhythm coverage are each satisfied by at least one member (`06` §C).
+  3. Exactly one producer is assigned, within that producer's capacity cap (`06` §C, §K).
+  4. Every member is eligible and checked in (`06` §B).
+  5. No participant appears in more than one band, and no checked-in eligible participant is unaccounted for.
+- **Secondary measures, reported per generation rather than pass/fail:**
+  - % of bands where all members share ≥5 of 7 availability blocks (target: as high as the pool allows; anything less is an outreach flag, not a failure — `06` §D).
+  - % of bands containing at least one Advanced member, and % containing at least one member from each of the Newer and Experienced groups (`04` Q2).
+  - % of bands with vocals covered (preferred, not required).
+  - % of bands with no equipment gap.
+  - Count of participants requiring manual placement.
+- A generation that cannot reach 100% on the hard constraints is not a failure of the tool **provided** every shortfall is named, attributed to a specific band, and accompanied by a remedy shortlist. Silent failure is the only real failure.

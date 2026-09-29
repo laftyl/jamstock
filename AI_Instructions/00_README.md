@@ -9,6 +9,10 @@ This folder is where you fill out project details for me to read and act on. Fil
 3. `03_matching_priorities.md` — tie-breakers and soft preferences (friend requests, availability, genre, etc.)
 4. `04_open_questions.md` — answers to smaller decisions I need from you as they come up
 5. `05_future_features.md` — stretch goals for later phases (notifications, judging, song submission tracking)
+6. `06_build_readiness_form.md` — hard build parameters: event dates, eligibility, band structure, ranked matching priorities, instrument→role table, scale target, and the definition of success
+7. `07_manual_overrides.md` — walk-in registration, moving people between bands, and dissolving/redistributing bands
+
+**Precedence:** where two files disagree, `06` is the most recent owner-authored source and wins. `03` §4 formally defers to `06` §D.
 
 ## How to fill these out
 - Just type directly under each heading/question, in plain English. No formatting required.
