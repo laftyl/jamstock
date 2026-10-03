@@ -4,9 +4,15 @@
 
 Agents maintain this file proactively. They add items as they come up, delete items that stop being relevant, and move answered items to the Resolved log. You never have to ask them to update it.
 
-Last updated: 2026-09-29 (Product Pete — P-1 through P-6 resolved)
+Last updated: 2026-10-03 (Manager Mike — M-1 through M-3 resolved; M-4 added, blocking)
 
 ---
+
+## Alixander's Notes
+1. We need a way to add producers and assign them to bands. It should be a seperate tab.
+
+
+--
 
 ## How to use this
 
@@ -21,11 +27,12 @@ Last updated: 2026-09-29 (Product Pete — P-1 through P-6 resolved)
 
 ## Manager Mike — coordination & approvals
 
+M-1 through M-3 are answered and in the Resolved log.
+
 | # | Priority | What I need from you | Why it matters | Your answer |
 |---|---|---|---|---|
-| M-1 | HIGH | Pick which of the 10 known gaps in `Agents/CODEBASE_MAP.md` we attack first. My recommendation: the band matching algorithm, since `/api/bands/generate` currently ignores every rule in `03` and `06`. | Nothing else can be sequenced until this is chosen. The event is Jan 1, 2027. | Sounds good |
-| M-2 | MEDIUM | Confirm the approval workflow works for you as written — plan versions, explicit approval wording, no edits to app code before approval. Or tell me to loosen it. | If the gate is too heavy you'll route around it, which defeats the point. | Sounds good |
-| M-3 | LOW | Decide whether `Agents/` and `.github/agents/` should be committed to git. They're currently untracked on branch `dev`. | Affects whether this team survives a fresh clone. | Yes, let's commit them. |
+| M-4 | BLOCKING | **Approve Dan's Plan v1.** It covers V-1, V-3, V-5 and TD-1 through TD-5: add `node --test`, extract matching into pure testable functions, kill the per-participant query, fix bearer-token logout, persist sessions across restart, and add the checkbox parsing layer delivering `primary_instruments: string[]`. Files: `server.js`, `public/app.js`, `package.json`, `.gitignore`, new parsing/matching modules, test files. Reply `Approve Plan v1`, or name what to exclude. | Your "Fix it" answers authorized the *items*; the plan adds a backward-compatible sessions schema change and an API response-shape change, which exceed what a one-line answer covers. Dan is holding until you name the version. |What does this mean? |
+| M-5 | HIGH | Dan found a **pre-existing generation bug** while planning: when any band is locked, `/api/bands/generate` keeps the old unlocked bands and appends new ones, so a participant can end up in two bands. He deliberately did not fix it inside the refactor. Want it as its own plan, or folded into the matching-algorithm build? | It can silently corrupt rosters on event day, which is exactly when you'd regenerate around a drop-out. |One person, one band, unless a producer. In that case, see my comment in Alixander Notes |
 
 ---
 
@@ -35,11 +42,11 @@ P-1 through P-6 are answered and moved to the Resolved log. These are what your 
 
 | # | Priority | What I need from you | Why it matters | Your answer |
 |---|---|---|---|---|
-| P-7 | HIGH | Approve or reject four items in my P-2 draft (`04_open_questions.md` → *2026-09-29 — Pete's answers to P-2*): **E5** cross-band equipment loans, **E6** an admin-entered house/venue gear inventory, **E7** letting electronic musicians digitally cover a missing bass/keys/percussion role, **F10** a matching time budget (I suggest 10 seconds). | E6 is the biggest single lever — if In Your Ear Studios has a house drum kit, it removes the worst equipment scarcity in the whole event. The rest change what Dan builds. | |
-| P-8 | HIGH | Approve `AI_Instructions/07_manual_overrides.md` (walk-in registration, move-with-suggestions, dissolve-and-redistribute) as the v1 spec, or tell me what to cut. My recommendation: Move + Unassigned are **must**; walk-in and dissolve are **should**. | `06` §G and §J.6 already promise manual moves. This is the first time they have testable criteria. | |
-| P-9 | MEDIUM | Three questions from the manual-override spec: (1) Should a manual move **auto-lock** both bands so regeneration can't undo your work? (2) Walk-in form: full ~15 fields, or a short version with the rest optional? (3) When someone no-shows, mark them **no-show** or delete them outright? | (1) decides whether you can lose work on event day. (2) trades typing time against match quality. (3) affects whether the headcount invariants can be trusted. | |
-| P-10 | MEDIUM | Confirm the success definition I derived from your P-6 answer: **100% of bands satisfy every hard constraint with zero BLOCKER flags**, where hard = size 3–6, percussion+bass+melody+rhythm covered, one producer within cap, all members eligible and checked in, nobody in two bands or missing. Availability, veteran presence, vocals, and equipment are reported as percentages rather than pass/fail. It's in `06` §M. | This is the number we'll argue about features with. If it's wrong, everything downstream is measured against the wrong thing. | |
-| P-11 | LOW | `06` §L still lists four defaults awaiting your sign-off: the instrument→role table (§E), equipment behavior (§F), producer shortage behavior (§K), duplicate handling (§G). Say "approve §L as written" or name what to change. | Dan has to hardcode the instrument→role table to build anything. It's the single most load-bearing table in the project. | |
+| P-7 | HIGH | Approve or reject four items in my P-2 draft (`04_open_questions.md` → *2026-09-29 — Pete's answers to P-2*): **E5** cross-band equipment loans, **E6** an admin-entered house/venue gear inventory, **E7** letting electronic musicians digitally cover a missing bass/keys/percussion role, **F10** a matching time budget (I suggest 10 seconds). | E6 is the biggest single lever — if In Your Ear Studios has a house drum kit, it removes the worst equipment scarcity in the whole event. The rest change what Dan builds. | E6 - love this idea. Create a new tab called "Venue". E7 - Absolutely. F10 - 10 seconds of what? This is not clear. If you're thinking about availability we're talking to the tune of hours not seconds. But Idk what you're talking about. |
+| P-8 | HIGH | Approve `AI_Instructions/07_manual_overrides.md` (walk-in registration, move-with-suggestions, dissolve-and-redistribute) as the v1 spec, or tell me what to cut. My recommendation: Move + Unassigned are **must**; walk-in and dissolve are **should**. | `06` §G and §J.6 already promise manual moves. This is the first time they have testable criteria. | Build it all.|
+| P-9 | MEDIUM | Three questions from the manual-override spec: (1) Should a manual move **auto-lock** both bands so regeneration can't undo your work? (2) Walk-in form: full ~15 fields, or a short version with the rest optional? (3) When someone no-shows, mark them **no-show** or delete them outright? | (1) decides whether you can lose work on event day. (2) trades typing time against match quality. (3) affects whether the headcount invariants can be trusted. |1. Yes. 2. Short version - experience, instruments, access to instruments, willingness to share, availability. 3. Mark as no-show.|
+| P-10 | MEDIUM | Confirm the success definition I derived from your P-6 answer: **100% of bands satisfy every hard constraint with zero BLOCKER flags**, where hard = size 3–6, percussion+bass+melody+rhythm covered, one producer within cap, all members eligible and checked in, nobody in two bands or missing. Availability, veteran presence, vocals, and equipment are reported as percentages rather than pass/fail. It's in `06` §M. | This is the number we'll argue about features with. If it's wrong, everything downstream is measured against the wrong thing. | Correct. |
+| P-11 | LOW | `06` §L still lists four defaults awaiting your sign-off: the instrument→role table (§E), equipment behavior (§F), producer shortage behavior (§K), duplicate handling (§G). Say "approve §L as written" or name what to change. | Dan has to hardcode the instrument→role table to build anything. It's the single most load-bearing table in the project. | I made notes in L |
 
 ---
 
@@ -47,12 +54,7 @@ P-1 through P-6 are answered and moved to the Resolved log. These are what your 
 
 | # | Priority | What I need from you | Why it matters | Your answer |
 |---|---|---|---|---|
-| D-1 | HIGH | `#password-input` is `type="text"`, so your admin password displays in plaintext on a laptop in a room full of people. Approve the one-line fix to `type="password"`. | Genuine shoulder-surfing exposure at a live event. | Yes, please fix this.|
-| D-2 | HIGH | When matching produces a band that violates a rule (no percussion, <5/7 availability overlap, no producer), how do you want to see it? Inline warning on the band card, a separate "Needs attention" panel, or both? | `06` §D asks for band-level notes and a manual-placement shortlist. I need to know where they live before I spec it. | Needs attention panel that I can click on each member or band and it gives me a suggestions to resolve with minimal conflicts on the matching criteria.|
-| D-3 | MEDIUM | Do you want to drag members between bands, or is a "move to band" dropdown enough? | Drag-and-drop is substantially more work in vanilla JS with no library. | Move to band but it ranks the suggestions based on minimal conflict of matching criteria. It shows what works and what cannot be resolved|
-| D-4 | MEDIUM | The import screen shows counts only — you can't see *which* rows were excluded or why, even though the server already returns them. Want a reviewable preview table? | You'll be importing messy real data and won't trust a number with no detail behind it. | Yes show this |
-| D-5 | LOW | Will you ever run this on an iPad or phone at the event, or is it laptop-only? | Decides how much the 760px breakpoint actually matters. | Keep it for an iPad |
-| D-6 | LOW | Confirm the current visual direction (warm paper, hard yellow shadow, no rounded corners) is what you want, or tell me to change it. | Cheaper to redirect now than after I spec ten new screens against it. | I want it to be beautiful, purple, fucia, neon-esque colors, rounded corners, but not guady. Keep it readable and functional. Like if MacOS was purple|
+| D-7 | MEDIUM | Approve widening the existing responsive breakpoint from 760px to 820px for iPad portrait, or keep 760px and accept/verify the five-column roster at 768px. | 768px is just outside the current compact-layout breakpoint, while you expect to use an iPad. See `AI_Instructions/08_ui_specs.md` → Responsive. | Approve |
 
 ---
 
@@ -77,6 +79,7 @@ Debt I've found but am not fixing yet. Each needs your go-ahead before I touch i
 | TD-3 | MEDIUM | `POST /api/auth/logout` deletes the raw `Authorization` header from `sessions`, which won't match if a client sends `Bearer <token>`. | `server.js` → grep `/api/auth/logout` | Logout silently fails in that case; session stays valid. | Fix it |
 | TD-4 | MEDIUM | Instruments, genres, skills, and availability are stored as raw comma-joined strings with no parsing layer. | `participants` table columns | Every matching rule in `03` and `06` needs parsed values. This has to be built before the real algorithm can exist. | Fix it |
 | TD-5 | LOW | Sessions live in an in-memory `Set`, so every server restart logs you out. | `server.js` → grep `const sessions` | Minor annoyance now; worse if the server restarts mid-event. | Fix it |
+| TD-6 | HIGH | This is becoming spaghetti code and expensive to build. I suggest a refactor. | All | High token usage and risk of not finishing the app on time. | Refactor ASAP |
 
 ---
 
@@ -95,3 +98,14 @@ Answered or completed items, kept for the record.
 | 2026-09-29 | P-4 | Walk-ins and drop-outs on event day | Answered: on-the-spot registration, manual add, manual move with ranked suggestions, and redistribution after a drop-out. Full spec with 41 numbered acceptance criteria written to `AI_Instructions/07_manual_overrides.md`. Approval tracked as P-8. |
 | 2026-09-29 | P-5 | Printable rosters or projector display | Answered: both. Recorded in `05_future_features.md` §4, including that the projector view omits emails and equipment details per `06` §F. |
 | 2026-09-29 | P-6 | Definition of success | Answered: "all bands are created based on priority criteria." Translated into a measurable target in `06` §M — 100% of bands satisfying every hard constraint with zero BLOCKER flags. Confirmation tracked as P-10. |
+| 2026-10-03 | D-1 | Mask the admin password | Implemented: `#password-input` now uses `type="password"`. |
+| 2026-10-03 | D-2 | Needs attention placement and interactions | Specified the fifth tab, severity queue, entity drill-in, ranked remedies, and flag contract in `AI_Instructions/08_ui_specs.md`; implementation belongs to Dan. |
+| 2026-10-03 | D-3 | Ranked manual moves and unresolved conflicts | Specified lexicographic ranking, both-band impact preview, blocker confirmation, atomic move endpoint, and response contract in `AI_Instructions/08_ui_specs.md`; implementation belongs to Dan. |
+| 2026-10-03 | D-4 | Reviewable import rows and reasons | Specified the review table, 1,000-row paging behavior, row reasons, and preview/commit contract in `AI_Instructions/08_ui_specs.md`; implementation belongs to Dan. |
+| 2026-10-03 | D-5 | iPad use | Recorded 768px portrait and 1024px landscape behavior and the 760px breakpoint risk in `AI_Instructions/08_ui_specs.md`; visual verification remains pending, and the breakpoint decision is tracked as D-7. |
+| 2026-10-03 | D-6 | Purple, rounded visual direction | Implemented the approved light purple/fuchsia token reskin, checked text contrast, rounded surfaces/controls, and visible keyboard focus in `public/styles.css`; DOM and class names are unchanged. |
+| 2026-10-03 | 07 §7 | Display all primary instruments | Specified array-shaped `primary_instruments` data and fully visible wrapping chips for roster/band cards in `AI_Instructions/08_ui_specs.md`; parsing/API implementation belongs to Dan (TD-4). |
+| 2026-10-03 | M-1 | Which gap to attack first | Answered "sounds good" to the matching algorithm. Sequencing set: TD-2 extraction and TD-4 parsing come first because the real algorithm needs both, and it needs the instrument→role table from P-11. |
+| 2026-10-03 | M-2 | Is the approval gate workable | Confirmed as written. Plan versions and explicit approval wording stay in force. Dan held at the gate on his first plan, which is the intended behavior. |
+| 2026-10-03 | M-3 | Commit the agent files | Done by Alixander. `.github/agents/*.agent.md`, `Agents/*.md`, and `AI_Instructions/00`–`07` are all tracked in git. |
+| 2026-10-03 | D-6 (verification) | Visual check of the reskin | Verified in the running app by Mike, not DeeDee. Auth view rendered at `http://127.0.0.1:3000`: purple/fuchsia palette, rounded corners, lavender offset shadow, password masked. Dashboard still unverified — it is behind the password. |

@@ -83,7 +83,7 @@ For each instrument, list roles from highest to lowest priority. Add as many row
 
 ## F. Producers and equipment
 
-- Maximum bands one producer may support: 5
+- Maximum bands one producer may support: 3
 - Can producer-only participants support multiple bands? (yes/no): Yes
 - Should performer/producers be assigned as both band members and producers? (yes/no): Yes. Minimize the amount of bands they can produce to 2.
 - Is equipment used as a matching requirement or only displayed as information? Required.
@@ -156,7 +156,7 @@ Describe what must be true for you to call version 1 complete:
 
 - Producer-only participants do not count toward the 3–6 performer band size and appear in a separate producer assignment view.
 - Performer/producers count as band members and may support no more than 2 bands.
-- Producer-only participants may support no more than 5 bands.
+- Producer-only participants may support no more than 3 bands.
 - Producer assignments are distributed as evenly as possible using availability only as an informational display, not a matching constraint.
 - If producer capacity is insufficient, draft bands are still generated and marked `Producer Needed` with a shortage count.
 - If a band cannot share 5 of 7 availability blocks, it receives a prominent availability warning for manual outreach.
@@ -169,10 +169,10 @@ Describe what must be true for you to call version 1 complete:
 
 Approve or edit these defaults before production implementation:
 
-1. Instrument-role mapping in Section E.
-2. Equipment behavior in Section F.
-3. Producer shortage behavior in Section K.
-4. Duplicate handling in Section G.
+1. Instrument-role mapping in Section E. Approve, but make it a seperate table so I can add instruments later.
+2. Equipment behavior in Section F. Approve
+3. Producer shortage behavior in Section K. Approve
+4. Duplicate handling in Section G. Approve
 
 The password recovery answers should be entered only in the running app during first-time setup, not saved in this file.
 
