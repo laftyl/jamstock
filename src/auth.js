@@ -66,6 +66,16 @@ function createAuthService(settingsRepository, sessionRepository) {
       settingsRepository.set('password_hash', hash(password));
       return createSession();
     },
+    changePassword(currentPassword, newPassword) {
+      const storedPassword = settingsRepository.get('password_hash');
+      if (typeof newPassword !== 'string' || newPassword.length < 10
+        || !verify(currentPassword, storedPassword)) {
+        return false;
+      }
+
+      settingsRepository.set('password_hash', hash(newPassword));
+      return true;
+    },
     isSessionValid(token) {
       return Boolean(token && sessionRepository.exists(sessionTokenHash(token)));
     },

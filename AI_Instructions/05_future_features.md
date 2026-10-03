@@ -2,9 +2,8 @@
 
 Not needed for the first working version — fill out whenever, or leave for later.
 
-## 1. Song submission tracking
-Do you want a way for bands to submit a link/file for their song before the 48-hour deadline expires? Should there be a visible countdown per band?
-Yes! We also want to keep track of names, email, band names, song submission, producers, etc in case we want to sync a song.
+## 1. Songs tab — approved and queued
+Producers email the admin one mixed track per band; the admin uploads it manually. Track submissions by band and retain the band name, producer, and related participant details for possible future song sync. Accept mp3, wav, m4a, and flac files up to 150 MB, stored locally on disk in `data/songs/`. This is the approved Songs tab, not a separate stems workflow (decision recorded 2026-10-03 in `04_open_questions.md`). Until it lands, producer assigned-band count is only a temporary planned-song count; thereafter show actual song records/counts (`09_producers.md`).
 
 ## 2. Judging / voting
 Will there be judges? Do you need a scoring or voting interface in this app, or is that handled separately?

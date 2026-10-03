@@ -4,7 +4,7 @@
 
 Agents maintain this file proactively. They add items as they come up and **delete completed items outright** — this board shows live work only. The full history of every answered item lives in git, in `AI_Instructions/`, and in `Agents/REGISTRY.md`.
 
-Last updated: 2026-10-03 (Manager Mike — Plan v3 approved, seed = (ii). Notes 2 and 3 triaged.)
+Last updated: 2026-10-03 (Product Pete — producer corrections and confirmed decisions recorded.)
 
 ---
 
@@ -12,11 +12,14 @@ Last updated: 2026-10-03 (Manager Mike — Plan v3 approved, seed = (ii). Notes 
 1. We need a way to add producers and assign them to bands. It should be a seperate tab.
 2. There is no UI element that lets me add walk-ins, rearrage bands, process drop-outs, etc. I though DeeDee handled this but I don't see anything.
 3. I can only input one password. Resets don't do anything.
+4. I need to be able to name bands when people choose a name. Plus I need a way to store music stems to give to producers matched to those bands
 
 > **Mike's triage.**
-> **1.** Queue item 2. Pete specs it next.
-> **2.** Correct — and the confusion is fair. DeeDee *designed* it; nobody *built* it. `07_manual_overrides.md` and `08_ui_specs.md` are written specifications, not working screens. Walk-ins, moves, dissolve, and Needs Attention are queue items 4 and 5. See **M-10** — you may want them sooner.
-> **3.** Real bug, and a lockout risk. Tracked as **M-11**; Dan is fixing it alongside Plan v3.
+> **1.** Queue item 2. Pete has specced it — `AI_Instructions/09_producers.md`.
+> **2.** Correct, and the confusion is fair. DeeDee *designed* it; nobody *built* it. `07_manual_overrides.md` and `08_ui_specs.md` are written specifications, not working screens. Now pulled forward into Plan v4.
+> **3.** **Fixed and verified.** Change-password endpoint exists; the reset error no longer misreports a short password as wrong recovery answers. Lockout escape hatch still open as M-11.
+> **4a.** Band naming — small, already specified in `02` §6, never built. Folding into Plan v4 at little cost. See **M-14**.
+> **4b.** Music stems — **not small, and it collides with an existing decision.** See **M-15** before we build anything.
 
 --
 
@@ -35,14 +38,25 @@ Last updated: 2026-10-03 (Manager Mike — Plan v3 approved, seed = (ii). Notes 
 
 | # | Priority | What I need from you | Why it matters | Your answer |
 |---|---|---|---|---|
-| M-10 | HIGH | **Reorder the queue?** Your note 2 says you went looking for walk-in/move/drop-out controls and found nothing. Those are queue items **4 and 5**, behind the Producers and Venue tabs. Want to pull them forward to positions 2 and 3? | You're clearly expecting to use them. If they matter more than the two new tabs, better to reorder now than after Pete specs work you don't need yet. | |
-| M-11 | HIGH | **Password reset bug — confirm the fix scope.** Three problems found: (a) `/api/auth/reset` returns *"The recovery answers did not match"* when the real failure is a password under 10 characters — misleading, and the likely cause of "resets don't do anything"; (b) there is **no way to change your password while logged in**, which is why you can "only input one password"; (c) if you can't reproduce your three recovery answers exactly, there is **no recovery path at all**. Fixing (a) and (b) now. For (c), want a documented reset-to-first-run escape hatch? | (c) is a genuine lockout risk on event day. | |
+| M-12 | BLOCKING | **Approve Plan v4** — the three things you just asked for, in one build: **(1) Producers tab** (add producers, assign to bands, show song load); **(2) Walk-in add + manual move/dissolve** from `07`; **(3) Needs Review** — both the band flag panel from Plan v3 and an import review table showing bad rows. Reply `Approve Plan v4`, or name what to cut. | These are queue items 2, 4 and 5 pulled forward. It's a big build, but they're all UI + endpoints on the clean foundation, so doing them together avoids three rounds of the same plumbing. | |
+| M-13 | BLOCKING | **"Needs review with a broken data set" has a requirements conflict.** You decided in `04` Q1 that disqualified registrants are *excluded entirely, never imported*, and in `06` §B that excluded registrations are *not stored*. So broken rows are discarded and there is nothing for a review screen to show after import. Pick: **(a)** review happens **before** commit, in the import preview table — you see every bad row and why, then decide (no stored data, no requirement change); or **(b)** also **store** excluded rows so you can revisit them later, which reverses Q1 and `06` §B. | This is why "needs review doesn't work" — it's not only unbuilt, the data is intentionally thrown away. | **(a)** — review before commit. No requirement change; Q1 and `06` §B stand. Import preview table shows every bad row and its reason. |
+| M-11 | HIGH | **Password lockout escape hatch.** (a) misleading reset error and (b) no change-password are **fixed and verified**. Still open: if you can't reproduce your three recovery answers exactly, there is no recovery path. Want a documented reset-to-first-run escape hatch? | Genuine lockout risk on event day. | |
+| M-14 | HIGH | **Band naming** | Cheap now, annoying to retrofit later. | **"Send it."** Building it. Two sub-questions you didn't answer, so I'm making the call — override either if you disagree: renaming a band **auto-locks** it (same rule as a manual move in P-9, so regeneration can't wipe the name), and the name **appears on the CSV export and projector view**. |
+| M-15 | HIGH | **Songs, not stems** | Decides the upload path and storage. | **Answered and accepted.** Producers email you a single mixed track; you upload it manually, one song per band. Local-only (`06` §A) **stands**. This **is** `05` §1 song submission tracking — one feature, a **Songs tab**. Formats mp3/wav/m4a/flac, max **150 MB**, stored on disk in `data/songs/`, gitignored. |
+| M-16 | MEDIUM | **Pete's Q13 — do producer assignments survive regeneration?** Today the code recomputes assignments on unlocked bands, so regenerating around a dropout silently reshuffles your producers. My call, which Dan is building: a producer you assigned **by hand** sticks; one the algorithm chose gets recomputed. Confirm or override. | Event-day surprise if wrong. | |
 
 ---
 
 ## Product Pete — requirements & scope
 
-**Nothing open.** Next up: specs for N-1 Producers and N-2 Venue.
+| # | Priority | What I need from you | Why it matters | Your answer |
+|---|---|---|---|---|
+| P-14 | HIGH | Confirm whether a producer who is not open to extra teams is limited to one band, with open producers allowed up to the §K cap. | The form asks about extra teams, but §K only states maximum caps; see Q14. | |
+| P-15 | HIGH | Resolve whether the >3-song notice is only an integrity warning under hard caps, or whether assignments above 3 may be allowed. | §D's alert cannot occur under §K's 3/2 caps and conflicts with §M's hard constraints; see Q15. | |
+| P-17 | HIGH | Choose automatic locking after a manual move, or keep `07`'s warning plus one-click lock for both affected bands. | Without this choice, Dan cannot know whether event-day placements must persist through regeneration; see Q17. | |
+| P-18 | MEDIUM | Choose whether no-shows are marked and retained or deleted. | Determines the event-day drop-out action and whether history remains auditable; see Q18. | |
+
+Next: N-2 Venue specification after the producer decisions are recorded.
 
 ---
 
@@ -54,19 +68,26 @@ Last updated: 2026-10-03 (Manager Mike — Plan v3 approved, seed = (ii). Notes 
 
 ## Developer Dan — implementation
 
-**Nothing open.** Holding on M-8 (Plan v3 approval).
+| # | Priority | What I need from you | Why it matters | Your answer |
+|---|---|---|---|---|
+
+### Developer Dan — Tech debt
+
+| # | Priority | What I need from you | Why it matters | Your answer |
+|---|---|---|---|---|
+| D-2 | MEDIUM | Confirm a separate build scope for the print-roster and projector views specified in `AI_Instructions/05_future_features.md`. | No print or projector UI exists; renamed bands already flow to the dashboard and CSV, but there is no display surface to verify downstream names. | |
 
 ---
 
-## Build queue — order confirmed "go in your order"
+## Build queue — reordered 2026-10-03 to what you actually need
 
 | # | Feature | Status |
 |---|---|---|
-| 1 | **Matching algorithm** | Plan v3 written — awaiting approval (M-8) |
-| 2 | **N-1 Producers tab.** Add producers, assign to bands, see each producer's song load. Producer-only people don't count toward band size (`06` §C) and may serve multiple bands — the exception to one-person-one-band. | Needs Pete spec |
-| 3 | **N-2 Venue tab.** House/venue gear inventory so venue equipment counts toward band coverage. | Needs Pete spec |
-| 4 | Manual overrides — walk-in, move-with-suggestions, dissolve (`07`) | Specced, not built |
-| 5 | Needs Attention panel + import preview table (`08`) | Specced, not built |
+| 1 | **Matching algorithm** | **Done.** Plan v3 implemented, 15 tests pass, seed input live. |
+| 2 | **Producers tab + band naming** | **Done.** Producer-centric assignment with capacity warnings, 5th tab live, rename auto-locks and flows to CSV. 14 tests pass. |
+| 3 | **Walk-in add, manual move/dissolve, Needs Review** (band flags + import review table) | Next. Specs: `07`, `08`. |
+| 4 | **Songs tab.** Upload one mixed track per band, track which bands have submitted. Merges `05` §1 song submission tracking. | Queued — needs format/size answer in M-15 |
+| 5 | **N-2 Venue tab.** House/venue gear inventory so venue equipment counts toward band coverage. | Deferred — needs Pete spec |
 
 ---
 

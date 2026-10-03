@@ -1,6 +1,7 @@
 const express = require('express');
 const { requireAuth } = require('../auth');
 const { displayParticipant } = require('../participants');
+const { createBandFlags, createMatchingScorer } = require('../scoring');
 
 function createParticipantsRouter(authService, repositories) {
   const router = express.Router();
@@ -9,9 +10,12 @@ function createParticipantsRouter(authService, repositories) {
   router.get('/dashboard', (request, response) => {
     const participants = repositories.participants.all().map(displayParticipant);
     const bands = repositories.bands.allWithMembers();
+    const scorer = createMatchingScorer(repositories.instruments.all());
     const bandDetails = bands.map((band) => ({
       ...band,
       members: band.members.map(displayParticipant),
+      producers: band.producers.map(displayParticipant),
+      flags: createBandFlags(band, scorer),
     }));
 
     response.json({

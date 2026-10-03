@@ -3,17 +3,22 @@ import { bindAuthEvents, showAuth } from './auth.js';
 import { bindBandEvents, renderBands } from './bands.js';
 import { bindImportEvents } from './imports.js';
 import { bindParticipantEvents, renderParticipants } from './participants.js';
+import { renderProducers } from './producers.js';
 
 const state = { mode: 'login', authenticated: false };
 
 async function loadDashboard() {
-  const data = await request('/api/dashboard');
+  const [data, producerDirectory] = await Promise.all([
+    request('/api/dashboard'),
+    request('/api/producers'),
+  ]);
   document.querySelector('#eligible-count').textContent = data.eligible;
   document.querySelector('#checked-in-count').textContent = data.checkedIn;
   document.querySelector('#band-count').textContent = data.bands;
   document.querySelector('#issue-count').textContent = data.issues;
   renderParticipants(data.participants, request, loadDashboard);
   renderBands(data.bandDetails, request, loadDashboard);
+  renderProducers(producerDirectory, request, loadDashboard);
 }
 
 function showDashboard(panelId = 'overview-panel') {

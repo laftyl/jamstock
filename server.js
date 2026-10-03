@@ -8,6 +8,7 @@ const { createAuthRouter } = require('./src/routes/auth');
 const { createBandsRouter } = require('./src/routes/bands');
 const { createImportRouter } = require('./src/routes/import');
 const { createParticipantsRouter } = require('./src/routes/participants');
+const { createProducersRouter } = require('./src/routes/producers');
 const { createWorkspaceRouter } = require('./src/routes/workspace');
 
 const root = __dirname;
@@ -24,6 +25,7 @@ app.use(express.json({ limit: '2mb' }));
 app.use(express.static(path.join(root, 'public'), { setHeaders: (response) => response.setHeader('Cache-Control', 'no-store') }));
 app.use('/api/auth', createAuthRouter(authService));
 app.use('/api', createParticipantsRouter(authService, repositories));
+app.use('/api/producers', createProducersRouter(authService, repositories));
 app.use('/api/import', createImportRouter(authService, repositories.participants));
 app.use('/api/bands', createBandsRouter(authService, repositories));
 app.use('/api', createWorkspaceRouter(authService, repositories.workspace));

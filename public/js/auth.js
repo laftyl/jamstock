@@ -83,4 +83,34 @@ export function bindAuthEvents(state, request, showDashboard) {
   });
 
   document.querySelector('#reset-button').addEventListener('click', () => showAuth(state, 'reset'));
+
+  const passwordDialog = document.querySelector('#password-dialog');
+  document.querySelector('#change-password-button').addEventListener('click', () => {
+    document.querySelector('#change-password-error').textContent = '';
+    passwordDialog.showModal();
+  });
+  document.querySelector('#cancel-password-change').addEventListener('click', () => passwordDialog.close());
+  document.querySelector('#change-password-form').addEventListener('submit', async (event) => {
+    event.preventDefault();
+    const errorElement = document.querySelector('#change-password-error');
+    errorElement.textContent = '';
+
+    try {
+      await request('/api/auth/change-password', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          currentPassword: document.querySelector('#current-password-input').value,
+          newPassword: document.querySelector('#new-password-input').value,
+        }),
+      });
+      document.querySelector('#change-password-form').reset();
+      passwordDialog.close();
+      const notice = document.querySelector('#notice');
+      notice.hidden = false;
+      notice.textContent = 'Password updated.';
+    } catch (error) {
+      errorElement.textContent = error.message;
+    }
+  });
 }

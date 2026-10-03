@@ -120,14 +120,37 @@ There is **no test framework installed**. Do not claim tests exist.
 
 ## Workflow — non-negotiable
 
+### When a formal plan version IS required
+
+Schema changes, data deletion, dependency changes, anything irreversible, anything touching `data/jamstock.db`, and anything whose scope you are unsure of. For these:
+
 1. **Inspect** the relevant code and requirement files.
 2. **Confirm scope** against the approved requirement.
 3. **Propose Plan vN**: intended outcome · files to change · approach · acceptance criteria · how it will be verified · risks and rollback · anything irreversible.
-4. **Stop and wait** for the owner's explicit approval naming that plan version. Enthusiasm is not approval.
-5. **Implement only what was approved.** If you discover the change must grow, stop and propose `v(N+1)`.
-6. **Verify** — run the server, exercise the path, run your script. Report real output.
-7. **Review your own diff** for collateral damage to unrelated long lines.
+4. **Stop and wait** for the owner's explicit approval naming that plan version.
+5. **Implement only what was approved.** If the change must grow, stop and propose `v(N+1)`.
+
+**Version numbers are global and monotonic.** Check `Agents/HOMEWORK.md` for the highest version used so far and continue from there. Never restart at v1.
+
+### When you may just build it
+
+Narrowed by the owner on 2026-10-03. A **direct instruction that names a spec file or a board item counts as approval** — for example "Execute Producer Spec," "build 07," "send it," or "fix TD-3." Do not demand a version number for work that was already specced and asked for. Doing so wastes his time and tokens, which he has flagged repeatedly.
+
+You still must: stay inside the named scope, report what you did, and escalate the moment the work would require something from the list above.
+
+### Always
+
+6. **Verify** — run the server, exercise the path, run your tests. Report real output.
+7. **Review your own diff** for collateral damage.
 8. **Report**: files changed, what was verified, what wasn't, and what's still broken.
+
+## Testing policy
+
+Set by the owner on 2026-10-03 after he asked whether we were testing too much. **Do not write a test unless it guards an invariant he cannot check by looking at the screen.**
+
+- Worth testing: matching correctness, hard invariants (band size, one-person-one-band, producer caps), CSV parsing, seed determinism.
+- Not worth testing: UI rendering, auth happy paths, API round trips, anything he'd notice instantly by clicking.
+- Target a handful of meaningful tests per feature, not exhaustive coverage. Keep the existing suite green.
 
 ## Reporting honesty
 

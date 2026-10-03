@@ -129,3 +129,45 @@ You already have: flag the band, per-producer song counts with a "first come fir
 
 Items needing an explicit yes/no from you: **E5**, **E6**, **E7**, **F10** (and the time budget).
 
+---
+
+### 2026-10-03 — Producers tab (N-1)
+
+**Owner decision P-9 — short walk-in form**
+
+The walk-in form is the short version: experience, instruments, instrument access, willingness to share, and availability. The existing eligibility requirements still apply. Walk-in form and registration behavior are specified in `07_manual_overrides.md`; `09_producers.md` only points to that flow and covers the producer-specific exception when a day-of participant is identified as a producer.
+
+**Q13. Producer assignments on regeneration**
+Should explicit producer assignments on unlocked bands be retained across regeneration, or recomputed with the new generation? Current code preserves assignments on locked bands and recomputes unlocked ones. Recommendation: keep that rule, with the admin locking bands whose producer assignments must persist.
+
+**Q14. Additional-team answer and capacity**
+Does answering "No, I'd rather focus on my team" limit the producer to one band, while "Absolutely!" allows the §K maximum (3 producer-only, 2 performer-producer)? Recommendation: yes; this gives the form answer an implementable effect without exceeding approved caps.
+
+**Q15. More-than-three alert versus capacity caps**
+Should the §D "more than 3 songs" notification be an integrity warning only (normal assignments remain capped at 3/2), or may the admin assign a producer to more than 3 bands and trigger the warning? These conflict with §M's hard requirement that every band have a producer within that producer's cap. Recommendation: preserve the hard caps and keep the alert for detected over-cap data only.
+
+**Q16. Song-load unit**
+Until song records exist, may the tab count each assigned band as one planned song? `05` treats song submission as a stretch feature; the event registration describes one song per band. Recommendation: use assigned-band count as the temporary load, then use actual producer-linked song records when that feature exists.
+
+### 2026-10-03 — Confirmed follow-up decisions
+
+**Q13. Producer assignments on regeneration — answered**
+Hand-assigned producer assignments survive regeneration, including on unlocked bands. Algorithm-picked producer assignments on unlocked bands recompute; assignments on locked bands remain. The producer workflow and generation must distinguish hand assignments from algorithm picks.
+
+**Q16. Song-load unit — answered**
+Assigned-band count may serve as the temporary planned-song count only until the Songs tab lands. Once it does, use actual uploaded song records/counts; the owner expects one mixed track per band.
+
+**Songs tab — approved and queued**
+Producers email the admin one mixed track per band; the admin uploads manually. Support mp3/wav/m4a/flac up to 150 MB, stored locally in `data/songs/`. This merges with `05` §1; it is one Songs feature, not a separate stems workflow.
+
+**Band renaming — downstream output confirmed**
+A chosen band name must update CSV export, print rosters, and projector view, not only the editable band record. The naming rule is recorded in `02` §6.
+
+Q14 and Q15 remain unanswered; do not re-ask Q13 or Q16.
+
+**Q17. Auto-lock bands after a manual move**
+Should moving a participant automatically lock both affected bands against regeneration, or keep the current `07` proposal: warn the admin and offer a one-click lock? This decides whether a confirmed event-day placement can be silently recomputed.
+
+**Q18. No-show record handling**
+When someone does not arrive, should the admin mark them as a no-show and retain their record/history, or delete them? `07` recommends retaining the record so generation and membership history remain auditable.
+

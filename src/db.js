@@ -22,9 +22,11 @@ function hasPendingMigration(db) {
   return !hasColumn(db, 'participants', 'primary_instruments')
     || !hasColumn(db, 'participants', 'availability_mask')
     || !hasColumn(db, 'bands', 'seed')
+    || !hasColumn(db, 'producer_assignments', 'source')
     || !tableExists(db, 'sessions')
     || !tableExists(db, 'instrument_mappings')
-    || !tableExists(db, 'producer_assignments');
+    || !tableExists(db, 'producer_assignments')
+    || !tableExists(db, 'producer_overrides');
 }
 
 function createTimestampedBackup(db, databasePath) {
@@ -97,13 +99,21 @@ function migrateDatabase(db) {
     CREATE TABLE IF NOT EXISTS producer_assignments (
       band_id INTEGER NOT NULL,
       participant_id INTEGER NOT NULL,
+      source TEXT NOT NULL DEFAULT 'algorithm',
       PRIMARY KEY (band_id, participant_id)
+    );
+    CREATE TABLE IF NOT EXISTS producer_overrides (
+      participant_id INTEGER PRIMARY KEY,
+      producer_only INTEGER NOT NULL,
+      additional_teams_open INTEGER NOT NULL,
+      updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
     );
   `);
 
   addColumnIfMissing(db, 'participants', 'primary_instruments', "TEXT NOT NULL DEFAULT '[]'");
   addColumnIfMissing(db, 'participants', 'availability_mask', 'INTEGER NOT NULL DEFAULT 0');
   addColumnIfMissing(db, 'bands', 'seed', "TEXT NOT NULL DEFAULT ''");
+  addColumnIfMissing(db, 'producer_assignments', 'source', "TEXT NOT NULL DEFAULT 'algorithm'");
 
   if (!participantColumns.has('primary_instruments') || !participantColumns.has('availability_mask')) {
     migrateParticipantCheckboxes(db, participantColumns);

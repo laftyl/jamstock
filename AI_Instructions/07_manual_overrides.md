@@ -46,13 +46,13 @@ Register a participant who never appeared in any import.
 ### Acceptance criteria
 
 1. An **Add participant** action is available from the participants panel to an authenticated admin, and opens a single-screen form requiring no page navigation and exactly one save action.
-2. The form collects every field the matching algorithm consumes, and no others: first name, last name, email, experience level, primary instruments (multi-select), other instruments (multi-select), musical skills (multi-select), genres comfortable (multi-select), genre openness (single choice), availability blocks (7 checkboxes), mentorship role (single choice), equipment access (multi-select), equipment willing to share (multi-select), producer status (none / performer+producer / producer only), producer-open-to-extra-teams (single choice, only when producer status is not "none"), ticket purchased (yes/no), 21 or older (yes/no).
-3. Every multi-select option list matches the Google Form option lists in `01` exactly, including an "Other" free-text entry that routes through the same keyword mapping and manual-review path as imported data (`04` Q6, `06` §E).
+2. Use the short walk-in form decided in P-9: experience, instruments, instrument access, equipment willing to share, and availability blocks. Also collect first name, last name, email, ticket purchased, and 21-or-older to enforce identity, duplicate, and eligibility rules. When producer status is selected, collect producer role (performer+producer / producer only) and additional-team willingness so assignments can respect capacity. Other fields may remain unset; do not require the full registration form.
+3. The short-form instrument, instrument-access, and sharing options match their Google Form lists in `01`, including "Other" entries routed through the same keyword mapping and manual-review path as imported data (`04` Q6, `06` §E). Availability uses the same seven form blocks.
 4. Saving is **refused** with a named reason when ticket purchased is "No" or 21-or-older is "No". A walk-in cannot bypass eligibility (`06` §B, `04` Q1). Verify: attempt both, confirm no row is created.
 5. Email is trimmed and lowercased and checked against existing participants before save (`06` §G duplicate policy). On collision the app shows the existing record and offers "update the existing participant" instead of creating a second row. Verify: entering the email of an already-imported participant never produces two rows.
 6. A saved walk-in is persisted with a `source` of `manual`, and with `raw_json` populated from the entered values, so every downstream code path — matching, export, display — treats it identically to an imported participant. Verify: a manually added participant appears in the CSV export with the same columns populated as an imported one.
 7. A walk-in defaults to checked in, and this is toggleable before and after save. (They are physically present; making the admin click twice is wasted time.)
-8. A walk-in added **after** bands are generated is never auto-inserted into an existing band. They appear in the Unassigned list with a ranked placement shortlist produced by Feature B's ranking.
+8. A walk-in added **after** bands are generated is never auto-inserted into an existing band. They appear in the Unassigned list with destination suggestions ranked by the same minimal-conflict scorer as Feature B. Each suggestion states what works, what remains unresolved, and the measured after-state; do not show a bare band-name shortlist.
 9. Walk-ins are visibly distinguishable from imported participants in the roster (a marker of some kind — DeeDee to spec the treatment), so the admin can audit what was entered by hand.
 10. The count of manually added participants is visible on the overview panel alongside the existing import counts.
 
@@ -83,7 +83,7 @@ Covers Alixander's exact scenario: someone drops out, the remainder is no longer
 
 ### Acceptance criteria
 
-23. A band card exposes **Dissolve band** (all members) and a per-member multi-select with **Redistribute selected** (partial dissolve).
+23. The band card is a direct management entry point: it exposes **Add unassigned member**, **Dissolve band** (all members), and a per-member multi-select with **Redistribute selected** (partial dissolve). Adding an unassigned person shows ranked destination suggestions with the same Works / Still unresolved details as an individual Move action; the shared scorer prevents the person-first and band-first suggestions from diverging.
 24. Dissolve requires a confirmation that names the band and its member count. A locked band must be unlocked first, and the app says so rather than failing silently.
 25. On dissolve, all affected members move to Unassigned, and the band record is retained in generation history rather than hard-deleted, so `06` §G's "restore a previous generation" still works.
 26. The app then presents a **redistribution worksheet**: one row per displaced member, each with a ranked destination list using the identical ranking as criterion 12/13, so the two features cannot drift apart.
@@ -144,5 +144,4 @@ Build order: parsing layer → ranking function → Unassigned → B → A → C
 ## Open questions for Alixander
 
 1. When you manually move someone, should the app **auto-lock** both affected bands so a later regeneration cannot undo your work? (Criterion 20 currently just warns.)
-2. On a walk-in, do you want to enter the full form (~15 fields, slower but complete matching data) or a short version (name, email, instruments, availability, ticket) with the rest optional? The short version makes them harder to match well.
 3. If someone no-shows, do you want to mark them **no-show** — keeping their record and history — or delete them outright? Marking is safer and keeps the invariant checks honest.

@@ -7,6 +7,7 @@ const {
   classifyParticipant,
   parseCheckboxValues,
   parsePrimaryInstruments,
+  producerParticipation,
 } = require('../src/parse');
 const { resolveInstrumentRoles } = require('../src/instruments');
 const { compareScoreVectors, mentorshipScore } = require('../src/scoring');
@@ -50,6 +51,49 @@ test('role mappings resolve approved instruments and flag unknown instruments', 
     ['bass', 'rhythm', 'melody'],
     ['manual review'],
   ]);
+});
+
+test('producer role detection accepts current and legacy Google Forms fields', () => {
+  assert.deepEqual(producerParticipation({
+    'Do you have skills in mixing music AND do you want to mix music for this event?': 'Yes',
+    'Would you like to be both a performer and producer, or focus primarily on production?': 'performer and producer',
+    'If this event is short on producers, would you be open to producing for additional teams?': 'Absolutely!',
+  }), {
+    isProducer: true,
+    producerOnly: false,
+    additionalTeamsOpen: true,
+    capacity: 2,
+    needsReview: false,
+    reviewReason: '',
+  });
+  assert.deepEqual(producerParticipation({
+    'Do you have mixing skills AND want to mix for this event?': 'Yes',
+    'Performer + Producer, or Producer only?': 'Producer only',
+    'If short on producers, open to producing for additional teams?': "No, I'd rather focus on my team",
+  }), {
+    isProducer: true,
+    producerOnly: true,
+    additionalTeamsOpen: false,
+    capacity: 1,
+    needsReview: false,
+    reviewReason: '',
+  });
+  assert.deepEqual(producerParticipation({
+    'Do you have skills in mixing music AND do you want to mix music for this event?': 'No',
+    'Would you like to be both a performer and producer, or focus primarily on production?': 'performer',
+    'If this event is short on producers, would you be open to producing for additional teams?': 'Absolutely!',
+  }), {
+    isProducer: false,
+    producerOnly: false,
+    additionalTeamsOpen: false,
+    capacity: 0,
+    needsReview: false,
+    reviewReason: '',
+  });
+  assert.equal(producerParticipation({
+    'Do you have mixing skills AND want to mix for this event?': 'Yes',
+    'Performer + Producer, or Producer only?': 'Producer only',
+  }).needsReview, true);
 });
 
 test('shared scoring helpers keep mentorship values and lexicographic ordering stable', () => {

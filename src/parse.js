@@ -123,10 +123,96 @@ function classifyParticipant(row) {
   };
 }
 
-function isProducerOnly(rawRow) {
-  const producerAnswer = readFormValue(rawRow, 'Do you have mixing skills AND want to mix for this event?');
-  const roleAnswer = readFormValue(rawRow, 'Performer + Producer, or Producer only?');
-  return producerAnswer === 'Yes' && roleAnswer.toLocaleLowerCase() === 'producer only';
+function producerParticipation(rawRow, override = null) {
+  if (override && typeof override.producerOnly === 'boolean'
+    && typeof override.additionalTeamsOpen === 'boolean') {
+    return {
+      isProducer: true,
+      producerOnly: override.producerOnly,
+      additionalTeamsOpen: override.additionalTeamsOpen,
+      capacity: override.additionalTeamsOpen ? (override.producerOnly ? 3 : 2) : 1,
+      needsReview: false,
+      reviewReason: '',
+    };
+  }
+
+  const producerAnswer = readFormValue(
+    rawRow,
+    'Do you have mixing skills AND want to mix for this event?',
+    'Do you have skills in mixing music AND do you want to mix music for this event?',
+    'Do you have skills in mixing music AND do you want to mix music for this event? *',
+  ).toLocaleLowerCase();
+  const roleAnswer = readFormValue(
+    rawRow,
+    'Performer + Producer, or Producer only?',
+    'Would you like to be both a performer and producer, or focus primarily on production?',
+    'Would you like to be both a performer and producer, or focus primarily on production? *',
+  ).toLocaleLowerCase();
+  const additionalTeamsAnswer = readFormValue(
+    rawRow,
+    'If short on producers, open to producing for additional teams?',
+    'If this event is short on producers, would you be open to producing for additional teams?',
+    'If this event is short on producers, would you be open to producing for additional teams? *',
+  ).toLocaleLowerCase();
+
+  if (producerAnswer === 'no') {
+    return {
+      isProducer: false,
+      producerOnly: false,
+      additionalTeamsOpen: false,
+      capacity: 0,
+      needsReview: false,
+      reviewReason: '',
+    };
+  }
+
+  if (producerAnswer !== 'yes') {
+    return unresolvedProducerParticipation('Mixing skills and intent answer is missing or unrecognized.');
+  }
+
+  const producerOnly = (
+    roleAnswer === 'producer only'
+    || roleAnswer === 'producer'
+    || roleAnswer.includes('focus primarily on production')
+  );
+  const performerProducer = roleAnswer.includes('performer + producer')
+    || roleAnswer.includes('performer and producer');
+  const additionalTeamsOpen = additionalTeamsAnswer === 'absolutely!'
+    || additionalTeamsAnswer === 'absolutely'
+    || additionalTeamsAnswer === 'yes';
+  const additionalTeamsClosed = additionalTeamsAnswer.startsWith('no');
+
+  if (!producerOnly && !performerProducer) {
+    return unresolvedProducerParticipation('Producer role answer is missing or unrecognized.');
+  }
+
+  if (!additionalTeamsOpen && !additionalTeamsClosed) {
+    return unresolvedProducerParticipation('Additional-team answer is missing or unrecognized.');
+  }
+
+  return {
+    isProducer: true,
+    producerOnly,
+    additionalTeamsOpen,
+    capacity: additionalTeamsOpen ? (producerOnly ? 3 : 2) : 1,
+    needsReview: false,
+    reviewReason: '',
+  };
+}
+
+function unresolvedProducerParticipation(reviewReason) {
+  return {
+    isProducer: false,
+    producerOnly: false,
+    additionalTeamsOpen: null,
+    capacity: 0,
+    needsReview: true,
+    reviewReason,
+  };
+}
+
+function isProducerOnly(rawRow, override) {
+  return producerParticipation(rawRow, override).producerOnly;
 }
 
 function parsePrimaryInstruments(storedValue, legacyValue = '') {
@@ -159,5 +245,6 @@ module.exports = {
   normalizeEmail,
   parseCheckboxValues,
   parsePrimaryInstruments,
+  producerParticipation,
   readFormValue,
 };

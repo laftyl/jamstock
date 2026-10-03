@@ -19,7 +19,7 @@ const DEFAULT_INSTRUMENT_MAPPINGS = [
   },
   {
     label: 'Keys/piano',
-    pattern: 'keys?|piano',
+    pattern: 'keys?|piano|keyboard',
     pattern_type: 'regex',
     primary_roles: ['melody', 'rhythm'],
     secondary_roles: ['bass'],
@@ -101,19 +101,24 @@ const DEFAULT_INSTRUMENT_MAPPINGS = [
 ];
 
 function resolveInstrumentRoles(instrumentNames, mappingRows = DEFAULT_INSTRUMENT_MAPPINGS) {
+  const mappings = mappingRows.map((row) => ({
+    ...row,
+    expression: row.pattern_type === 'literal'
+      ? new RegExp(`^${escapeRegExp(row.pattern)}$`, 'i')
+      : new RegExp(row.pattern, 'i'),
+  }));
+
   return instrumentNames.map((instrument) => {
-    const mapping = mappingRows.find((row) => {
-      const pattern = row.pattern_type === 'literal'
-        ? new RegExp(`^${escapeRegExp(row.pattern)}$`, 'i')
-        : new RegExp(row.pattern, 'i');
-      return pattern.test(instrument);
-    });
+    const mapping = mappings.find((row) => row.expression.test(instrument));
 
     return {
       instrument,
       roles: mapping
         ? [...mapping.primary_roles, ...mapping.secondary_roles, ...mapping.tertiary_roles]
         : ['manual review'],
+      primary_roles: mapping?.primary_roles ?? [],
+      secondary_roles: mapping?.secondary_roles ?? [],
+      tertiary_roles: mapping?.tertiary_roles ?? [],
       matched_mapping: mapping?.label ?? null,
     };
   });

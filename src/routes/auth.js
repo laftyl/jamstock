@@ -14,10 +14,11 @@ function createAuthRouter(authService) {
       return response.status(409).json({ error: 'Administrator is already configured.' });
     }
 
-    if (!validCredentials(password, answers)) {
-      return response.status(400).json({
-        error: 'Use a password of at least 10 characters and answer all three recovery questions.',
-      });
+    if (!validPassword(password)) {
+      return response.status(400).json({ error: 'Password must be at least 10 characters.' });
+    }
+    if (!validRecoveryAnswers(answers)) {
+      return response.status(400).json({ error: 'Answer all three recovery questions.' });
     }
 
     response.json({ token: authService.setup(password, answers) });
@@ -34,8 +35,11 @@ function createAuthRouter(authService) {
 
   router.post('/reset', (request, response) => {
     const { password, answers } = request.body;
-    if (!validCredentials(password, answers)) {
-      return response.status(401).json({ error: 'The recovery answers did not match.' });
+    if (!validPassword(password)) {
+      return response.status(400).json({ error: 'Password must be at least 10 characters.' });
+    }
+    if (!validRecoveryAnswers(answers)) {
+      return response.status(400).json({ error: 'Answer all three recovery questions.' });
     }
 
     const token = authService.reset(password, answers);
@@ -46,6 +50,18 @@ function createAuthRouter(authService) {
     response.json({ token });
   });
 
+  router.post('/change-password', requireAuth(authService), (request, response) => {
+    const { currentPassword, newPassword } = request.body;
+    if (!validPassword(newPassword)) {
+      return response.status(400).json({ error: 'New password must be at least 10 characters.' });
+    }
+    if (typeof currentPassword !== 'string' || !authService.changePassword(currentPassword, newPassword)) {
+      return response.status(401).json({ error: 'Current password is incorrect.' });
+    }
+
+    response.json({ ok: true });
+  });
+
   router.post('/logout', requireAuth(authService), (request, response) => {
     authService.logout(request.sessionToken);
     response.json({ ok: true });
@@ -54,10 +70,12 @@ function createAuthRouter(authService) {
   return router;
 }
 
-function validCredentials(password, answers) {
-  return typeof password === 'string'
-    && password.length >= 10
-    && Array.isArray(answers)
+function validPassword(password) {
+  return typeof password === 'string' && password.length >= 10;
+}
+
+function validRecoveryAnswers(answers) {
+  return Array.isArray(answers)
     && answers.length === 3
     && answers.every((answer) => typeof answer === 'string' && answer.trim());
 }

@@ -19,4 +19,4 @@ If people don't fit neatly into a full band (e.g. 3 drummers and only 1 band nee
 Match based off non-primary instruments ideally. If that doesn't solve it, err for duplicates across many bands rather than packing them all into one (for example, I'd rather have 5 bands have 2 bass players rather than 2 bands have 5 bass players)
 
 ## 6. Band naming
-Do bands get auto-generated placeholder names (e.g. "Band 1", "Band 2") or something else? Placeholders are Band 1, Band 2, etc. But I should be able to enter band names when folks decide.
+Do bands get auto-generated placeholder names (e.g. "Band 1", "Band 2") or something else? Placeholders are Band 1, Band 2, etc. But I should be able to enter band names when folks decide. A renamed band uses its saved name in downstream data, including CSV export, print rosters, and projector view (confirmed 2026-10-03; see `04_open_questions.md`).
