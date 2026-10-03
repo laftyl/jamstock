@@ -58,4 +58,4 @@ input { width: 100%; min-height: 44px; padding: 11px 14px; border: 1px solid var
 .import-box { max-width: 700px; padding: 22px; border: 1px dashed var(--coral); border-radius: 12px; background: #f7eaf7; }
 #import-form { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
 #import-file { flex: 1; min-width: 220px; }
-@media (max-width: 760px) { .topbar, .section-heading, .wide-card { align-items: start; flex-direction: column; } .section-actions { width: 100%; flex-wrap: wrap; } .search { max-width: none; flex: 1; } .panel-grid { grid-template-columns: repeat(2, 1fr); } .list-row { grid-template-columns: 1fr 1fr; } .person-details { grid-column: span 2; } .band-grid { grid-template-columns: 1fr; } .tabs { overflow-x: auto; } }
+@media (max-width: 820px) { .topbar, .section-heading, .wide-card { align-items: start; flex-direction: column; } .section-actions { width: 100%; flex-wrap: wrap; } .search { max-width: none; flex: 1; } .panel-grid { grid-template-columns: repeat(2, 1fr); } .list-row { grid-template-columns: 1fr 1fr; } .person-details { grid-column: span 2; } .band-grid { grid-template-columns: 1fr; } .tabs { overflow-x: auto; } }
