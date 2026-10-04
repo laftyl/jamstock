@@ -4,7 +4,27 @@
 
 Agents maintain this file proactively. They add items as they come up and **delete completed items outright** — this board shows live work only. The full history of every answered item lives in git, in `AI_Instructions/`, and in `Agents/REGISTRY.md`.
 
-Last updated: 2026-10-03 (Product Pete — producer corrections and confirmed decisions recorded.)
+Last updated: 2026-10-04 (Developer Dan — **import fixed.** It was a dependency crash, not our code. Walk-ins / move / Needs Review are unblocked.)
+
+---
+
+## ✅ Import is fixed — please confirm
+
+**It was never a bug in our code.** `src/parse.js`, the import routes, the migration and the client were all innocent. `better-sqlite3@11.10.0` is not compatible with the Node v24 you're running: the native layer aborts the whole server process during garbage collection with `Assertion failed: (env) != nullptr`. It killed the server **mid-request**, which is why the browser just showed a failure with nothing useful in the console, and why the test suite stayed green — the tests are too short-lived to trigger a GC pass.
+
+It was also intermittent: roughly two runs in three crashed, one succeeded. That is the signature of a GC-timing bug, and it's why this looked unreproducible.
+
+**What changed:** `better-sqlite3` 11.10.0 → 12.11.1 · `engines.node >= 22` added to `package.json` · new `test/import.test.js` (24 lines — the small focused one Mike promised, not the 244-line original).
+
+**Verified:** all four files in `Sample_Data/` preview and commit over real HTTP, six consecutive clean runs, 15 tests pass, duplicate emails still skip correctly.
+
+| # | Priority | What I need from you | Why it matters | Your answer |
+|---|---|---|---|---|
+| D-3 | BLOCKING | **Confirm the import works for you in the browser.** The server is running at http://127.0.0.1:3000 — log in, go to Imports, and load `Sample_Data/ideal_scenario_100_entries.csv`. You should see `101 eligible` and then 101 rows saved. | I verified it over HTTP, not through the real UI with your real database. If it still fails for you, the cause is in the browser layer and I need the console error. | |
+
+**If you ever see the app die again after a Node upgrade, suspect this first.** `better-sqlite3` ships a compiled binary tied to your Node version; upgrading Node without upgrading it reintroduces exactly this crash. Note that `npm` now blocks native install scripts by default — after any reinstall you may need `npm install-scripts approve better-sqlite3`, otherwise the binary is silently never built.
+
+---
 
 ---
 

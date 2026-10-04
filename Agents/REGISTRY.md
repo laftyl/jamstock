@@ -54,3 +54,4 @@ Statuses: `BACKLOG` `READY` `IN_PROGRESS` `BLOCKED` `IN_REVIEW` `AWAITING_APPROV
 |---|---|---|---|---|---|
 | T-001 | Stand up the AI product team | 4 agent configs + registry + codebase map exist and are selectable in VS Code | Manager_Mike | DONE | — |
 | T-002 | Decide which requirements gap to tackle first (see `Agents/CODEBASE_MAP.md` → Known gaps) | Owner picks a gap; Pete writes a brief with acceptance criteria | Product_Pete | READY | T-001 |
+| T-003 | Fix the broken import (2026-10-03) | Root cause was `better-sqlite3@11.10.0` aborting the Node 24 process (`Assertion failed: (env) != nullptr`) during GC mid-request, not application code. Upgraded to `12.11.1`, pinned `engines.node >= 22`, added `test/import.test.js`. All four sample files import; 15 tests pass. | Developer_Dan | DONE | — |
